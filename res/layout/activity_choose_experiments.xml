@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/searchLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:orientation="vertical" >
+
+    <CheckBox android:id="@+id/experiment_one"
+       	    android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/experiment_one"
+            android:onClick="onCheckboxClicked"/>
+    <CheckBox android:id="@+id/experiment_two"
+       	    android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/experiment_two"
+            android:onClick="onCheckboxClicked"/>
+    <CheckBox android:id="@+id/experiment_three"
+       	    android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/experiment_three"
+            android:onClick="onCheckboxClicked"/>
+
+</LinearLayout>

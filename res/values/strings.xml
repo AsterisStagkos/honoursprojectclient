@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AndroidHProject</string>
+    <string name="sign_in_button">Sign In</string>
+    <string name="pick_account">Please pick an account to proceed</string>
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="not_online">Device not connected to the internet</string>
+    <string name="receiver">Receive</string>
+    <string name="title_activity_receiver">ReceiverActivity</string>
+    <string name="show_file">Show file</string>
+    <string name="app_label">Mirror</string>
+    <string name="experiment_one">Experiment 1</string>
+    <string name="experiment_two">Experiment 2</string>
+    <string name="experiment_three">Experiment 3</string>
+    <string name="search_hint">hint</string>
+    <string name="ip_hint">Server Address</string>
+    <string name="password_hint">Enter Password</string>
+    <string name="search">search</string>
+    <string name="connect">Connect to Server</string>
+    <string name="email_hint">Enter email</string>
+    <string name="sendQuery">Send Query</string>
+    <string name="install">Install</string>
+    <string name="testInstall">Test Installation</string>
+    <string name="title_activity_searchable">SearchableActivity</string>
+    <string name="title_activity_app_detail">AppDetailActivity</string>
+    <string name="experiments">Choose Experiments</string>
+    <string name="title_activity_choose_experiments">ChooseExperimentsActivity</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+</resources>
