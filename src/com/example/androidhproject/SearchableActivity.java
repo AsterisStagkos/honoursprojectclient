@@ -49,7 +49,7 @@ public class SearchableActivity extends ActionBarActivity implements OnClickList
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_searchable);
 		web = new websockets();
-		
+		web.setContext(getApplicationContext());
 		CustomListView = this;
 		 // Get the intent, verify the action and get the query
 	    Intent intent = getIntent();
@@ -217,7 +217,7 @@ public class SearchableActivity extends ActionBarActivity implements OnClickList
             }
 			
 		//	ArrayAdapter<String>adapter=new ArrayAdapter<String>(getBaseContext(), R.layout.custom_list_layout,R.id.firstline,value);
-			adapter = new CustomAdapter( CustomListView, CustomListViewValuesArr, getResources());
+			adapter = new CustomAdapter( CustomListView, CustomListViewValuesArr, getResources(), 1);
 
 			llNewSearch.setAdapter(adapter);
 			Log.d("display data", "before adding on click listener");

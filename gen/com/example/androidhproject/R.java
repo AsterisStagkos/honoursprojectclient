@@ -2048,7 +2048,6 @@ containing a value of this type.
         public static final int checkbox=0x7f0a003c;
         public static final int classic=0x7f0a002e;
         public static final int collapseActionView=0x7f0a0015;
-        public static final int connectButton=0x7f0a005c;
         public static final int creator_name=0x7f0a0054;
         public static final int decor_content_parent=0x7f0a0042;
         public static final int default_activity_button=0x7f0a0037;
@@ -2065,6 +2064,7 @@ containing a value of this type.
         public static final int experiment_three=0x7f0a005b;
         public static final int experiment_two=0x7f0a005a;
         public static final int experimentsButton=0x7f0a005e;
+        public static final int experimentsLayout=0x7f0a0058;
         public static final int firstline=0x7f0a0066;
         public static final int fourthline=0x7f0a0069;
         public static final int grayscale=0x7f0a002f;
@@ -2094,7 +2094,7 @@ containing a value of this type.
         public static final int sandbox=0x7f0a0026;
         public static final int satellite=0x7f0a0021;
         public static final int searchApp=0x7f0a006c;
-        public static final int searchLayout=0x7f0a0058;
+        public static final int searchLayout=0x7f0a005c;
         public static final int search_badge=0x7f0a0048;
         public static final int search_bar=0x7f0a0047;
         public static final int search_button=0x7f0a0049;

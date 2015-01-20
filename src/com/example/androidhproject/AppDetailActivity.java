@@ -78,7 +78,7 @@ public class AppDetailActivity extends ActionBarActivity {
 		
 		
 		downloadButton = (Button) findViewById(R.id.download_button);
-		if (!appFile.exists()) {
+		if (1==1 || !appFile.exists()) {
 			downloadButton.setText("Download");
 			downloadButton.setBackgroundColor(Color.MAGENTA);
 		} else {
@@ -176,6 +176,7 @@ public class AppDetailActivity extends ActionBarActivity {
 		    websockets.setAppName(appName +".apk");
 		    Thread threadReceive = new Thread(new Runnable() {
 	             public void run() {
+	            	 Log.d("thread receive started", "yea it started");
 	            	 websockets.receive(appName);
 	             }
 	         });

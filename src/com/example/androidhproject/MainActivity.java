@@ -67,7 +67,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
 //		connectButton.setOnClickListener(this);
 		
 		final Button signInButton = (Button) findViewById(R.id.signInButton);
-	//	connectButton.setOnClickListener(this);
+
 		
 		signInButton.setOnClickListener(new View.OnClickListener() {
 	           public void onClick(View v) {
@@ -76,8 +76,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
 	       });
 		
 		final Button experimentsButton = (Button) findViewById(R.id.experimentsButton);
-	//	connectButton.setOnClickListener(this);
-		
+
 		experimentsButton.setOnClickListener(new View.OnClickListener() {
 	           public void onClick(View v) {
 	        	   Intent experimentsIntent = new Intent(MainActivity.this, ChooseExperimentsActivity.class);

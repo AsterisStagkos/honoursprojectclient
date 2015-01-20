@@ -24,15 +24,16 @@ public class CustomAdapter extends BaseAdapter   implements OnClickListener {
          public Resources res;
          SearchListModel tempValues=null;
          int i=0;
+         int appActivity = 0;
           
          /*************  CustomAdapter Constructor *****************/
-         public CustomAdapter(Activity a, ArrayList d,Resources resLocal) {
+         public CustomAdapter(Activity a, ArrayList d,Resources resLocal, int appActivitey) {
               
                 /********** Take passed values **********/
                  activity = a;
                  data=d;
                  res = resLocal;
-              
+                 appActivity = appActivitey;
                  /***********  Layout inflator to call external xml layout () ***********/
                   inflater = ( LayoutInflater )activity.
                                               getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -139,12 +140,19 @@ public class CustomAdapter extends BaseAdapter   implements OnClickListener {
              @Override
              public void onClick(View arg0) {
  
-        
+               if (appActivity == 1) {
                SearchableActivity sct = (SearchableActivity)activity;
  
               /****  Call  onItemClick Method inside CustomListViewAndroidExample Class ( See Below )****/
  
                  sct.onItemClick(mPosition);
+               } else if (appActivity == 2) {
+            	   ChooseExperimentsActivity sct = (ChooseExperimentsActivity)activity;
+            	   
+                   /****  Call  onItemClick Method inside CustomListViewAndroidExample Class ( See Below )****/
+      
+                      sct.onItemClick(mPosition);
+               }
              }               
          }   
      }

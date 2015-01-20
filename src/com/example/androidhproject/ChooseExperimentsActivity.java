@@ -2,13 +2,20 @@ package com.example.androidhproject;
 
 
 
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 public class ChooseExperimentsActivity extends ActionBarActivity implements OnItemSelectedListener {
@@ -16,10 +23,15 @@ public class ChooseExperimentsActivity extends ActionBarActivity implements OnIt
 	private static boolean experiment1;
 	private static boolean experiment2;
 	private static boolean experiment3;
+	CustomAdapter adapter;
+	public  ChooseExperimentsActivity CustomListView = null;
+	public  ArrayList<SearchListModel> CustomListViewValuesArr = new ArrayList<SearchListModel>();
+	    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_choose_experiments);
+		CustomListView = this;
 	}
 
 	@Override
@@ -41,6 +53,65 @@ public class ChooseExperimentsActivity extends ActionBarActivity implements OnIt
 		return super.onOptionsItemSelected(item);
 	}
 
+	public void displayData(String data) {
+		LinearLayout llActivity = (LinearLayout) findViewById(R.id.experimentsLayout);
+		StringTokenizer st = new StringTokenizer(data, ">");
+			
+			ListView llNewSearch = new ListView(this);
+			llNewSearch.setClickable(true);
+			int listSize = st.countTokens();
+			String value[]=new String[listSize];
+			for (int i = 0; i< listSize; i++) {
+				String s=st.nextToken();
+				value[i] = s;
+				Log.d("displayData", "nextToken: " + s );
+			}
+			
+			for (int i = 0; i < listSize; i++) {
+                
+                final SearchListModel sched = new SearchListModel();
+                     
+                
+                StringTokenizer resultToken = new StringTokenizer(value[i], "<");
+			    String appName = "";
+			    String assetID = "";
+			    String creator = "";
+			    String description = "";
+			    if (resultToken.hasMoreTokens()) {
+			        appName = resultToken.nextToken();
+			    }
+			    if (resultToken.hasMoreTokens()) {
+			    	assetID = resultToken.nextToken();
+			    }
+			    if (resultToken.hasMoreTokens()) {
+			    	creator = resultToken.nextToken();
+			    }
+			    if (resultToken.hasMoreTokens()) {
+			    	description = resultToken.nextToken();
+			    }
+                  /******* Firstly take data in model object ******/
+                   sched.setAppName(appName);
+                   sched.setDescription(description);;
+                   sched.setAssetId(assetID);
+                   sched.setCreator(creator);
+                   
+                    
+                /******** Take Model Object in ArrayList **********/
+                CustomListViewValuesArr.add( sched );
+            }
+			
+		//	ArrayAdapter<String>adapter=new ArrayAdapter<String>(getBaseContext(), R.layout.custom_list_layout,R.id.firstline,value);
+			adapter = new CustomAdapter( CustomListView, CustomListViewValuesArr, getResources(), 2);
+
+			llNewSearch.setAdapter(adapter);
+			Log.d("display data", "before adding on click listener");
+	
+			llActivity.addView(llNewSearch);
+				
+			
+
+	}
+	
 	public static boolean getExperiment1() {
 		return experiment1;
 	}
@@ -88,4 +159,17 @@ public class ChooseExperimentsActivity extends ActionBarActivity implements OnIt
 		// TODO Auto-generated method stub
 		
 	}
+	public void onItemClick(int mPosition)
+    {
+        SearchListModel tempValues = ( SearchListModel ) CustomListViewValuesArr.get(mPosition);
+
+        Intent appDetailIntent = new Intent(ChooseExperimentsActivity.this, AppDetailActivity.class);
+        appDetailIntent.putExtra("App Name", tempValues.getAppName());
+		appDetailIntent.putExtra("asset ID", tempValues.getAssetId());
+		appDetailIntent.putExtra("Creator", tempValues.getCreator());
+		appDetailIntent.putExtra("Description", tempValues.getAppDescription());
+		startActivity(appDetailIntent);                 
+
+       
+    }
 }

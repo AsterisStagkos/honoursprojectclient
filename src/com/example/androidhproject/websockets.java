@@ -1,18 +1,19 @@
 package com.example.androidhproject;
 
 import java.io.FileOutputStream;
-import java.net.DatagramPacket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.StringTokenizer;
 
 import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.handshake.ServerHandshake;
 
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
 public class websockets {
 	private static WebSocketClient mWebSocketClient;
@@ -20,6 +21,7 @@ public class websockets {
 	public static int fileSizeStatic;
 	public static byte[] fileBytesStatic;
 	static byte[] nextPacket;
+	static int noOfPackets = 100;
 	static AppDetailActivity whichActivity;
 	static Context appContext;
 	static String appName;
@@ -42,9 +44,15 @@ public class websockets {
 	}
 	public void sendMessage(byte[] message) {
 		//Log.d("message to send: ", message);
-		Log.d("socket is: " , mWebSocketClient.toString());
-		
+		//Log.d("socket is: " , mWebSocketClient.toString());
+		try {
 		mWebSocketClient.send(message);
+		} catch (WebsocketNotConnectedException e) {
+			 Toast.makeText(appContext, "Web not connected, try again in 10 seconds", Toast.LENGTH_SHORT).show();
+			 e.printStackTrace();
+			
+		}
+		
 	}
 	public void connectWebSocket() {
 		  URI uri;
@@ -79,9 +87,16 @@ public class websockets {
 		      }
 		      if (firstToken.equals("query")) {
 		    	  Log.d("received byte message", message);
-		    	  message = message.substring(4);
+		    	  message = message.substring(5);
 			      SearchableActivity.setDisplayData(message);
+		      } else if (firstToken.equals("noOfPackets")) {
+		    	  if (messageTok.hasMoreTokens()) {
+		    		  noOfPackets = Integer.parseInt(messageTok.nextToken());
+		    		  Log.d("noOfPackets" ,"set to: " + noOfPackets);
+		    	  }
+		    	//  noOfPackets = Integer.parseInt(messageTok.nextToken());
 		      } else {
+		    	//  Log.d("received message", message);
 		    	  nextPacket = messageReceived;
 //		    	  int fileSize = bytes.getShort(0);
 //		    	  fileSizeStatic = fileSize;
@@ -116,6 +131,8 @@ public class websockets {
 	 public static void receive(String fileName) {
 	        int prevPacketNo = -1;
 	        try {
+	        //	websockets.nextPacket = new byte[1029];
+	       // 	Thread.sleep(1500);
 	            // Array b will hold the packet received. Has a header of size 3 to indicate
 	            // the packet number and whether it is the last packet or not
 	            // Array ack will hold the acknowledgement that the receiver will send back to the sender
@@ -128,15 +145,21 @@ public class websockets {
 	            ByteBuffer byteBuffer;
 	            ByteBuffer ackByteBuffer;
 	            while (true) {
+	            	if (noOfPackets == 0) {
+	            		Log.d("error detected", "closing thread");
+	                	whichActivity.setInstall(false);
+	                	break;
+	                }
 	                // Receive a packet and store it in array b
 //	                DatagramPacket packet = new DatagramPacket(b, b.length);
 //	                udpSocket.receive(packet);
-	            	b = nextPacket;
+	            	b = websockets.nextPacket;
 	                // Use a byte buffer to decipher the packet number and packet size
 	                byteBuffer = ByteBuffer.wrap(b, 0, 5);
 	                int packetNo = (int) byteBuffer.getShort(0);
-	                Log.d("received packet", packetNo + "");
-	                whichActivity.setProgressStatus(packetNo);
+	             //   Log.d("received packet", packetNo + "");
+	                whichActivity.setProgressStatus((int)(((double)packetNo/(double) noOfPackets) * 100));
+	                
 	                int packetSize = (int) byteBuffer.getShort(3);
 	                // Create a 1byte acknowledgement with the value 0 or 1 depending on the packet number
 	                // of the packet received. Use a byte buffer to add that to a byte array and then
@@ -151,10 +174,10 @@ public class websockets {
 //	                        packet.getAddress(), packet.getPort());
 	            //   System.out.println("Sent ack: " + ack[0]);
 	                SearchableActivity.web.sendMessage(reply.getBytes());
-	                Log.d("send ack: " ,""+ bit);
+	           //     Log.d("send ack: " ,""+ bit);
 	              //  udpSocket.send(ACK);
 	                // Write files only if they are not duplicate.
-	                if (!(packetNo <= prevPacketNo) ) {
+	                if (!(packetNo <= prevPacketNo)) {
 	                    Log.d("Packet Number written to file: ",""+ packetNo);
 	                    f.write(b, 5, packetSize);
 	                } else {
@@ -168,6 +191,7 @@ public class websockets {
 	                	whichActivity.setInstall(true);
 	                    break;
 	                }
+	                
 	            }
 	        //    udpSocket.close();
 	            f.close();

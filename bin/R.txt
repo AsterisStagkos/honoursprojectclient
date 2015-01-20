@@ -455,7 +455,6 @@ int id buy_with_google 0x7f0a002d
 int id checkbox 0x7f0a003c
 int id classic 0x7f0a002e
 int id collapseActionView 0x7f0a0015
-int id connectButton 0x7f0a005c
 int id creator_name 0x7f0a0054
 int id decor_content_parent 0x7f0a0042
 int id default_activity_button 0x7f0a0037
@@ -472,6 +471,7 @@ int id experiment_one 0x7f0a0059
 int id experiment_three 0x7f0a005b
 int id experiment_two 0x7f0a005a
 int id experimentsButton 0x7f0a005e
+int id experimentsLayout 0x7f0a0058
 int id firstline 0x7f0a0066
 int id fourthline 0x7f0a0069
 int id grayscale 0x7f0a002f
@@ -501,7 +501,7 @@ int id radio 0x7f0a003e
 int id sandbox 0x7f0a0026
 int id satellite 0x7f0a0021
 int id searchApp 0x7f0a006c
-int id searchLayout 0x7f0a0058
+int id searchLayout 0x7f0a005c
 int id search_badge 0x7f0a0048
 int id search_bar 0x7f0a0047
 int id search_button 0x7f0a0049
