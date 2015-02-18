@@ -3,9 +3,20 @@
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:padding="6dip" >
+    <LinearLayout
+    android:id="@+id/searchImageLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" >
 
+    <ImageView
+        android:id="@+id/iconView"
+        android:layout_width="50dp"
+        android:layout_height="50dp" />
+    
     <LinearLayout
     android:id="@+id/searchLayout"
+    android:paddingLeft="10dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
@@ -36,6 +47,6 @@
         android:textSize="12sp" />
 
      </LinearLayout>
-
+</LinearLayout>
 
 </RelativeLayout> 

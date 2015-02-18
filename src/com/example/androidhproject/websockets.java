@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
@@ -21,10 +22,15 @@ public class websockets {
 	public static int fileSizeStatic;
 	public static byte[] fileBytesStatic;
 	static byte[] nextPacket;
-	static int noOfPackets = 100;
+	private static int noOfPackets = 100;
+	private static boolean packetsSet = false;
 	static AppDetailActivity whichActivity;
 	static Context appContext;
 	static String appName;
+	private boolean isOpen = false;
+	static String filePath;
+	static boolean startDownload = false;
+	static TreeMap<Integer, byte[]> packets = new TreeMap<Integer, byte[]>(); 
 	public static void setThread(Thread newThread) {
 		thread = newThread;
 	}
@@ -33,14 +39,24 @@ public class websockets {
 //		this.mWebSocketClient = mWebSocketClient;
 //	}
 	
+	public boolean isOpen() {
+		return isOpen;
+	}
 	public static void setContext(Context context) {
 		appContext = context;
+	}
+	public static void setFilePath(String filepath) {
+		filePath = filepath;
 	}
 	public static void seActivity(AppDetailActivity activity) {
 		whichActivity = activity;
 	}
 	public static void setAppName(String appname) {
 		appName = appname;
+	}
+	public void setNoOfPackets(int number) {
+		noOfPackets = number;
+		packetsSet = true;
 	}
 	public void sendMessage(byte[] message) {
 		//Log.d("message to send: ", message);
@@ -69,6 +85,7 @@ public class websockets {
 		    @Override
 		    public void onOpen(ServerHandshake serverHandshake) {
 		      Log.d("Websocket", "Opened");
+		      isOpen = true;
 		      String heyBytes = "Hey";
 		      byte[] heyinBytes = heyBytes.getBytes();
 		      mWebSocketClient.send(heyinBytes);
@@ -89,15 +106,28 @@ public class websockets {
 		    	  Log.d("received byte message", message);
 		    	  message = message.substring(5);
 			      SearchableActivity.setDisplayData(message);
+		      } else if (firstToken.equals("experiments")) {
+		    	  ChooseExperimentsActivity.setDisplayData(message);
 		      } else if (firstToken.equals("noOfPackets")) {
 		    	  if (messageTok.hasMoreTokens()) {
-		    		  noOfPackets = Integer.parseInt(messageTok.nextToken());
+		    		  setNoOfPackets(Integer.parseInt(messageTok.nextToken()));
+		    		  
 		    		  Log.d("noOfPackets" ,"set to: " + noOfPackets);
 		    	  }
 		    	//  noOfPackets = Integer.parseInt(messageTok.nextToken());
 		      } else {
 		    	//  Log.d("received message", message);
 		    	  nextPacket = messageReceived;
+		    	  ByteBuffer byteBuffer = ByteBuffer.wrap(messageReceived, 0, 5);
+	              int packetNo = (int) byteBuffer.getShort(0);
+	             
+	              if (!packets.containsKey(packetNo)) {
+	            	  Log.d("receiver", "inserted packet: " + packetNo + " into packets[]");
+	            	  packets.put(packetNo, messageReceived);
+	            	  if (packetNo == 0) {
+	            		  startDownload = true;
+	            	  }
+	              }
 //		    	  int fileSize = bytes.getShort(0);
 //		    	  fileSizeStatic = fileSize;
 //		    	  Log.d("fileSize = ", fileSize + "");
@@ -116,6 +146,7 @@ public class websockets {
 
 		    @Override
 		    public void onClose(int i, String s, boolean b) {
+		    	isOpen = false;
 		      Log.i("Websocket", "Closed " + s);
 		    }
 
@@ -128,8 +159,8 @@ public class websockets {
 		  mWebSocketClient.connect();
 		  Log.d("Websocket", "trying to connect 3");
 		}
-	 public static void receive(String fileName) {
-	        int prevPacketNo = -1;
+	 public static void receive(String fileName, websockets web) {
+	        int expectedSeqNumber = 0;
 	        try {
 	        //	websockets.nextPacket = new byte[1029];
 	       // 	Thread.sleep(1500);
@@ -138,57 +169,74 @@ public class websockets {
 	            // Array ack will hold the acknowledgement that the receiver will send back to the sender
 	            // for each packet it receives
 	            byte[] b = new byte[1029];
-	            byte[] ack = new byte[1];
+	   //         byte[] ack = new byte[4];
 	         //   DatagramSocket udpSocket = new DatagramSocket(port);
 	            FileOutputStream f = appContext.openFileOutput(appName,
 						appContext.MODE_WORLD_READABLE);
 	            ByteBuffer byteBuffer;
-	            ByteBuffer ackByteBuffer;
+	     //       ByteBuffer toSendByteBuffer = ByteBuffer.wrap(ack);
+	            while (!packetsSet) {
+	            	Thread.sleep(25);
+	            }
 	            while (true) {
+	            	Thread.sleep(25);
+	            	
 	            	if (noOfPackets == 0) {
 	            		Log.d("error detected", "closing thread");
 	                	whichActivity.setInstall(false);
+	                	packetsSet = false;
 	                	break;
 	                }
 	                // Receive a packet and store it in array b
 //	                DatagramPacket packet = new DatagramPacket(b, b.length);
 //	                udpSocket.receive(packet);
-	            	b = websockets.nextPacket;
-	                // Use a byte buffer to decipher the packet number and packet size
-	                byteBuffer = ByteBuffer.wrap(b, 0, 5);
-	                int packetNo = (int) byteBuffer.getShort(0);
-	             //   Log.d("received packet", packetNo + "");
-	                whichActivity.setProgressStatus((int)(((double)packetNo/(double) noOfPackets) * 100));
-	                
-	                int packetSize = (int) byteBuffer.getShort(3);
-	                // Create a 1byte acknowledgement with the value 0 or 1 depending on the packet number
-	                // of the packet received. Use a byte buffer to add that to a byte array and then
-	                // send it back through the same port that we receive data from
-	               
-	                int bit = packetNo;
-	                ack[0] = 0;
-	                ackByteBuffer = ByteBuffer.wrap(ack);
-	                ackByteBuffer.put((byte) bit);
-	                String reply = "ack " + bit;
-//	                DatagramPacket ACK = new DatagramPacket(ack, 1,
-//	                        packet.getAddress(), packet.getPort());
-	            //   System.out.println("Sent ack: " + ack[0]);
-	                SearchableActivity.web.sendMessage(reply.getBytes());
-	           //     Log.d("send ack: " ,""+ bit);
-	              //  udpSocket.send(ACK);
-	                // Write files only if they are not duplicate.
-	                if (!(packetNo <= prevPacketNo)) {
-	                    Log.d("Packet Number written to file: ",""+ packetNo);
+	            	if (packets.containsKey(expectedSeqNumber) && startDownload) {
+	            		b = packets.get(expectedSeqNumber).clone();
+	            		 // Use a byte buffer to decipher the packet number and packet size
+		                byteBuffer = ByteBuffer.wrap(b, 0, 5);
+		                int packetNo = (int) byteBuffer.getShort(0);
+		             //   Log.d("received packet", packetNo + "");
+		                whichActivity.setProgressStatus((int)(((double)expectedSeqNumber/(double) noOfPackets) * 100));
+		                
+		                int packetSize = (int) byteBuffer.getShort(3);
+		                Log.d("Packet Number written to file: ",""+ packetNo + " ack sent: " + expectedSeqNumber);
+		               	 
 	                    f.write(b, 5, packetSize);
-	                } else {
-	                    // Dont do anything if received duplicate file, just send back the same ack as before.
-	                    //System.out.println("Duplicate packet received and disgarded: " + packetNo);
-	                }
-	                prevPacketNo = packetNo;
-	                // Break out of loop if receive last packet, and close the socket and output stream
+	             //       packets.remove(packetNo);
+	                    web.sendMessage(("ack " + expectedSeqNumber).getBytes());
+	                    expectedSeqNumber++;
+	                    while (packets.containsKey(expectedSeqNumber)) {
+	                    	b = packets.get(expectedSeqNumber).clone();
+	                    	byteBuffer = ByteBuffer.wrap(b, 0, 5);
+	 		                packetNo = (int) byteBuffer.getShort(0);
+	 		                whichActivity.setProgressStatus((int)(((double)expectedSeqNumber/(double) noOfPackets) * 100));
+			                
+			                packetSize = (int) byteBuffer.getShort(3);
+			                Log.d("Packet Number written to file: ",""+ packetNo + " ack sent: " + expectedSeqNumber);
+			               	 
+		                    f.write(b, 5, packetSize);
+		                    web.sendMessage(("ack " + expectedSeqNumber).getBytes());
+		                    expectedSeqNumber++;
+	                    	
+	                    }
+		                
+	            	} else {
+	            		int ackToSend = expectedSeqNumber-1;
+	            		if (ackToSend < 0) {
+	            			ackToSend = 0;
+	            		}
+	            		Log.d("receiver", "not found packet: " + expectedSeqNumber + " sent ack: " + ackToSend);
+	            		web.sendMessage(("ack " + (ackToSend)).getBytes());
+	            	}
+	               
+
 	                if (b[2] == 1) {
+	                	startDownload = false;
+	                	packetsSet = false;
+	                	web.sendMessage("ack final".getBytes());
 	                	whichActivity.setProgressStatus(100);
 	                	whichActivity.setInstall(true);
+	                	packets.clear();
 	                    break;
 	                }
 	                
@@ -197,6 +245,7 @@ public class websockets {
 	            f.close();
 	        } catch (Exception e) {
 	            System.out.println("Exception: " + e);
+	            e.printStackTrace();
 	        }
 	    }
 

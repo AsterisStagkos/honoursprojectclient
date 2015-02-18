@@ -23,17 +23,37 @@ public class ChooseExperimentsActivity extends ActionBarActivity implements OnIt
 	private static boolean experiment1;
 	private static boolean experiment2;
 	private static boolean experiment3;
+	public static String displayData = "";
 	CustomAdapter adapter;
 	public  ChooseExperimentsActivity CustomListView = null;
 	public  ArrayList<SearchListModel> CustomListViewValuesArr = new ArrayList<SearchListModel>();
+	public static websockets web;
 	    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_choose_experiments);
 		CustomListView = this;
+		web.setContext(getApplicationContext());
+		web = new websockets();
+		web.connectWebSocket();
+		try {
+			Thread.sleep(1000);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		web.sendMessage("Experiment".getBytes());
+		try {
+		Thread.sleep(3000);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		displayData(displayData);
 	}
 
+	public static void setDisplayData(String data) {
+		displayData = data;
+	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -55,19 +75,13 @@ public class ChooseExperimentsActivity extends ActionBarActivity implements OnIt
 
 	public void displayData(String data) {
 		LinearLayout llActivity = (LinearLayout) findViewById(R.id.experimentsLayout);
-		StringTokenizer st = new StringTokenizer(data, ">");
+		data = data.substring(11);
+		String value[] = data.split(">nextapp<");
 			
 			ListView llNewSearch = new ListView(this);
 			llNewSearch.setClickable(true);
-			int listSize = st.countTokens();
-			String value[]=new String[listSize];
-			for (int i = 0; i< listSize; i++) {
-				String s=st.nextToken();
-				value[i] = s;
-				Log.d("displayData", "nextToken: " + s );
-			}
 			
-			for (int i = 0; i < listSize; i++) {
+			for (int i = 0; i < value.length; i++) {
                 
                 final SearchListModel sched = new SearchListModel();
                      
@@ -77,6 +91,7 @@ public class ChooseExperimentsActivity extends ActionBarActivity implements OnIt
 			    String assetID = "";
 			    String creator = "";
 			    String description = "";
+			    String filePath = "";
 			    if (resultToken.hasMoreTokens()) {
 			        appName = resultToken.nextToken();
 			    }
@@ -89,11 +104,16 @@ public class ChooseExperimentsActivity extends ActionBarActivity implements OnIt
 			    if (resultToken.hasMoreTokens()) {
 			    	description = resultToken.nextToken();
 			    }
+			    if (resultToken.hasMoreTokens()) {
+			    	filePath = resultToken.nextToken();
+			    }
                   /******* Firstly take data in model object ******/
                    sched.setAppName(appName);
                    sched.setDescription(description);;
                    sched.setAssetId(assetID);
                    sched.setCreator(creator);
+                   sched.setFilePath(filePath);
+                   Log.d("FilePath set to", filePath);
                    
                     
                 /******** Take Model Object in ArrayList **********/
@@ -121,28 +141,29 @@ public class ChooseExperimentsActivity extends ActionBarActivity implements OnIt
 	    
 	    // Check which checkbox was clicked
 	    switch(view.getId()) {
-	        case R.id.experiment_one:
-	            if (checked) {
-	            	experiment1 = true;
-	            }
-	            else {
-	            	experiment1 = false;
-	            }
-	           
-	            break;
-	        case R.id.experiment_two:
-	        	if (checked) {
-	        		experiment2 = true;
-	        	} else {
-	        		experiment2 = false;
-	        	}
-	        	break;
-	        case R.id.experiment_three:
-	        	if (checked) {
-	        		experiment3 = true;
-	        	} else {
-	        		experiment3 = false;
-	        	}
+//	        case R.id.experiment_one:
+//	            if (checked) {
+//	            	experiment1 = true;
+//	            }
+//	            else {
+//	            	experiment1 = false;
+//	            }
+//	           
+//	            break;
+//	        case R.id.experiment_two:
+//	        	if (checked) {
+//	        		experiment2 = true;
+//	        	} else {
+//	        		experiment2 = false;
+//	        	}
+//	        	break;
+//	        case R.id.experiment_three:
+//	        	if (checked) {
+//	        		experiment3 = true;
+//	        	} else {
+//	        		experiment3 = false;
+//	        	}
+	    	default:
 	        	break;
 	        // TODO: Veggie sandwich
 	    }
@@ -168,6 +189,7 @@ public class ChooseExperimentsActivity extends ActionBarActivity implements OnIt
 		appDetailIntent.putExtra("asset ID", tempValues.getAssetId());
 		appDetailIntent.putExtra("Creator", tempValues.getCreator());
 		appDetailIntent.putExtra("Description", tempValues.getAppDescription());
+		appDetailIntent.putExtra("filePath", tempValues.getFilePath());
 		startActivity(appDetailIntent);                 
 
        

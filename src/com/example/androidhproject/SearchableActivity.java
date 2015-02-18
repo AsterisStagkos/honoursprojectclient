@@ -10,20 +10,21 @@ import org.java_websocket.client.WebSocketClient;
 
 import android.app.SearchManager;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.gc.android.market.api.MarketSession;
 
 public class SearchableActivity extends ActionBarActivity implements OnClickListener{
 	public static boolean shouldInstall = false;
@@ -33,7 +34,9 @@ public class SearchableActivity extends ActionBarActivity implements OnClickList
 	private static String authenticationToken = "invalid";
 	private WebSocketClient mWebSocketClient;
 	private static String displayData = "";
+	private static MarketSession session;
 	public static websockets web;
+	public static boolean dataReady = false;
 	
 	ListView list;
     CustomAdapter adapter;
@@ -42,25 +45,34 @@ public class SearchableActivity extends ActionBarActivity implements OnClickList
     
     public static void setDisplayData(String data) {
 		displayData = data;
+		dataReady = true;
 	}
-    
+    public void enableStrictMode()
+    {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+     
+        StrictMode.setThreadPolicy(policy);
+    }
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_searchable);
+		enableStrictMode();
+		session = MarketApi.authenticate(GetUsernameTask.getAndroidId(), false, GetUsernameTask.getSearchToken());
 		web = new websockets();
 		web.setContext(getApplicationContext());
 		CustomListView = this;
 		 // Get the intent, verify the action and get the query
 	    Intent intent = getIntent();
 	    if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-	      query = intent.getStringExtra(SearchManager.QUERY) + " " + GetUsernameTask.getSearchToken() + " " + GetUsernameTask.getAndroidId();
+	    //  query = intent.getStringExtra(SearchManager.QUERY) + " " + GetUsernameTask.getSearchToken() + " " + GetUsernameTask.getAndroidId();
+	    query = intent.getStringExtra(SearchManager.QUERY);
 	      connectionSocket = MainActivity.connectionSocket;
-	      try {
-				Thread.sleep(100);
-				} catch (InterruptedException ex) {
-					Thread.currentThread().interrupt();
-				}
+//	      try {
+//				Thread.sleep(100);
+//				} catch (InterruptedException ex) {
+//					Thread.currentThread().interrupt();
+//				}
 	      sendQuery();
 	    }
 //	   final Button connectButton = (Button) findViewById(R.id.connectButton);
@@ -109,8 +121,7 @@ public class SearchableActivity extends ActionBarActivity implements OnClickList
 	}
 	public void sendQuery() {
 	//	conn.sendData(connectionSocket, "query " + query);
-		web.connectWebSocket();
-		try {
+	/*	try {
 			Thread.sleep(3000);
 			} catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
@@ -119,11 +130,21 @@ public class SearchableActivity extends ActionBarActivity implements OnClickList
 		web.sendMessage(queryMessage);
 		Log.d("SearchAbleActivity", "sent data");
 		try {
-			Thread.sleep(4500);
+			Thread.sleep(3500);
 			} catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
 			}
+			*/
+		MarketApi.searchApp(query, session);
+		while (!dataReady) {
+			try {
+				Thread.sleep(50);
+				} catch (InterruptedException ex) {
+					Thread.currentThread().interrupt();
+				}
+		}
 		displayData(displayData);
+		dataReady = false;
 		//awaitResponse("query", "");
 		
 	}
@@ -171,19 +192,13 @@ public class SearchableActivity extends ActionBarActivity implements OnClickList
 	}
 	public void displayData(String data) {
 		LinearLayout llActivity = (LinearLayout) findViewById(R.id.searchLayout);
-		StringTokenizer st = new StringTokenizer(data, ">");
+		ListView llNewSearch = new ListView(this);
+		llNewSearch.setClickable(true);
+		
+		String value[] = data.split(">nextapp<");
+	
 			
-			ListView llNewSearch = new ListView(this);
-			llNewSearch.setClickable(true);
-			int listSize = st.countTokens();
-			String value[]=new String[listSize];
-			for (int i = 0; i< listSize; i++) {
-				String s=st.nextToken();
-				value[i] = s;
-				Log.d("displayData", "nextToken: " + s );
-			}
-			
-			for (int i = 0; i < listSize; i++) {
+			for (int i = 0; i < value.length; i++) {
                 
                 final SearchListModel sched = new SearchListModel();
                      
@@ -210,6 +225,10 @@ public class SearchableActivity extends ActionBarActivity implements OnClickList
                    sched.setDescription(description);;
                    sched.setAssetId(assetID);
                    sched.setCreator(creator);
+                   Bitmap icon = MarketApi.getImage(session, assetID);
+                   if (icon != null) {
+                	   sched.setAppIcon(icon);  
+                   }
                    
                     
                 /******** Take Model Object in ArrayList **********/
@@ -241,6 +260,7 @@ public class SearchableActivity extends ActionBarActivity implements OnClickList
 		 appDetailIntent.putExtra("asset ID", tempValues.getAssetId());
 		 appDetailIntent.putExtra("Creator", tempValues.getCreator());
 		 appDetailIntent.putExtra("Description", tempValues.getAppDescription());
+		 appDetailIntent.putExtra("Icon", tempValues.getAppIcon());
 		 startActivity(appDetailIntent);                 
 
         

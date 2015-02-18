@@ -1,14 +1,23 @@
 package com.example.androidhproject;
 
+import android.graphics.Bitmap;
+
 public class SearchListModel {
     
+	private Bitmap image;
     private  String AppName="";
     private  String Creator="";
     private  String AppDescription="";
     private String assetId="";
+    private String filePath = "";
      
     /*********** Set Methods ******************/
-     
+     public void setFilePath(String filePath) {
+    	this.filePath = filePath;
+    }
+    public void setAppIcon(Bitmap icon) {
+    	this.image = icon;
+    }
     public void setAppName(String AppName)
     {
         this.AppName = AppName;
@@ -30,6 +39,9 @@ public class SearchListModel {
      
     /*********** Get Methods ****************/
      
+    public Bitmap getAppIcon() {
+    	return this.image;
+    }
     public String getAppName()
     {
         return this.AppName;
@@ -49,5 +61,8 @@ public class SearchListModel {
     public String getAppDescription()
     {
         return this.AppDescription;
-    }    
+    }   
+    public String getFilePath() {
+    	return this.filePath;
+    }
 }

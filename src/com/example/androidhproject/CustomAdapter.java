@@ -63,7 +63,7 @@ public class CustomAdapter extends BaseAdapter   implements OnClickListener {
              public TextView creator;
              public TextView description;
              public TextView assetId;
-           //  public ImageView assetID;
+             public ImageView icon;
       
          }
       
@@ -81,6 +81,7 @@ public class CustomAdapter extends BaseAdapter   implements OnClickListener {
                  /****** View Holder Object to contain tabitem.xml file elements ******/
  
                  holder = new ViewHolder();
+                 holder.icon = (ImageView) vi.findViewById(R.id.iconView);
                  holder.appName = (TextView) vi.findViewById(R.id.firstline);
                  holder.creator=(TextView)vi.findViewById(R.id.secondline);
                  holder.description = (TextView) vi.findViewById(R.id.thirdline);
@@ -106,6 +107,7 @@ public class CustomAdapter extends BaseAdapter   implements OnClickListener {
                   
                  /************  Set Model values in Holder elements ***********/
  
+                  holder.icon.setImageBitmap(tempValues.getAppIcon());
                   holder.appName.setText( tempValues.getAppName() );
                   holder.creator.setText( tempValues.getCreator() );
                  // holder.description.setText( tempValues.getAppDescription() );

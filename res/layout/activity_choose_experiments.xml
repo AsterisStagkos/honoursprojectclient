@@ -7,7 +7,7 @@
     android:paddingRight="16dp"
     android:orientation="vertical" >
 
-    <CheckBox android:id="@+id/experiment_one"
+   <!-- <CheckBox android:id="@+id/experiment_one"
        	    android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/experiment_one"
@@ -21,6 +21,6 @@
        	    android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/experiment_three"
-            android:onClick="onCheckboxClicked"/>
+            android:onClick="onCheckboxClicked"/> -->
 
 </LinearLayout>
