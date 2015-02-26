@@ -92,6 +92,9 @@ public class ChooseExperimentsActivity extends ActionBarActivity implements OnIt
 			    String creator = "";
 			    String description = "";
 			    String filePath = "";
+			    String isExperimentString = "";
+			    boolean isIndependent = false;
+			    boolean isExperiment = false;
 			    if (resultToken.hasMoreTokens()) {
 			        appName = resultToken.nextToken();
 			    }
@@ -107,12 +110,23 @@ public class ChooseExperimentsActivity extends ActionBarActivity implements OnIt
 			    if (resultToken.hasMoreTokens()) {
 			    	filePath = resultToken.nextToken();
 			    }
+			    if (resultToken.hasMoreTokens()) {
+			    	isExperimentString = resultToken.nextToken();
+			    	Log.d("isExperimentString: " ,"is experiment string: " + isExperimentString);
+			    	if (isExperimentString.equals("true")) {
+			    		isIndependent = true;
+			    	}
+			    	isExperiment = true;
+			    }
                   /******* Firstly take data in model object ******/
                    sched.setAppName(appName);
                    sched.setDescription(description);;
                    sched.setAssetId(assetID);
                    sched.setCreator(creator);
                    sched.setFilePath(filePath);
+                   sched.setIsExperiment(isExperiment);
+                   sched.setIsIndependent(isIndependent);
+                   
                    Log.d("FilePath set to", filePath);
                    
                     
@@ -190,6 +204,8 @@ public class ChooseExperimentsActivity extends ActionBarActivity implements OnIt
 		appDetailIntent.putExtra("Creator", tempValues.getCreator());
 		appDetailIntent.putExtra("Description", tempValues.getAppDescription());
 		appDetailIntent.putExtra("filePath", tempValues.getFilePath());
+		appDetailIntent.putExtra("isExperiment", tempValues.isExperiment());
+		appDetailIntent.putExtra("isIndependent", tempValues.isIndependent());
 		startActivity(appDetailIntent);                 
 
        

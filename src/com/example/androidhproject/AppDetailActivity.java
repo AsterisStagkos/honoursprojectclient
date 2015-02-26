@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.util.StringTokenizer;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
@@ -21,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class AppDetailActivity extends ActionBarActivity {
 
@@ -30,12 +32,14 @@ public class AppDetailActivity extends ActionBarActivity {
 	private String appdescription = "";
 	private Bitmap appIcon;
 	private String filePath = "";
+	private int buttonStatus = Constants.BTN_STATUS_DOWNLOAD;
+	private boolean isExperiment = false;
+	private boolean isIndependent = true;
 	private static Connections conn = new Connections();
 	private static Socket connectionSocket;
 	private LinearLayout detailLayout;
 	private LinearLayout buttonLayout;
 	private int mProgressStatus = 0;
-	private boolean downloadOrInstall;
 	private ProgressBar mProgress;
 	Button downloadButton;
 	TextView appDescription;
@@ -44,7 +48,6 @@ public class AppDetailActivity extends ActionBarActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		downloadOrInstall = false;
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_app_detail);
 		connectionSocket = MainActivity.connectionSocket;
@@ -55,6 +58,8 @@ public class AppDetailActivity extends ActionBarActivity {
 		appdescription = intent.getExtras().getString("Description");
 		appIcon = intent.getExtras().getParcelable("Icon");
 		filePath = intent.getExtras().getString("filePath");
+		isExperiment = intent.getExtras().getBoolean("isExperiment");
+		isIndependent = intent.getExtras().getBoolean("isIndependent");
 
 		detailLayout = (LinearLayout) findViewById(R.id.app_detail_layout);
 		if (appIcon != null) {
@@ -84,24 +89,38 @@ public class AppDetailActivity extends ActionBarActivity {
 		appDescription.setText(appdescription);
 		appDescription.setMovementMethod(new ScrollingMovementMethod());
 
-		File appFile = new File(this.getFilesDir() + "/" + appName + ".apk");
+		//File appFile = new File(this.getFilesDir() + "/" + appName + ".apk");
 
 		downloadButton = (Button) findViewById(R.id.download_button);
-		if (1 == 1 || !appFile.exists()) {
-			downloadButton.setText("Download");
-			downloadButton.setBackgroundColor(Color.MAGENTA);
+		/*
+		 * If we already own the app file, simply display the button to Install it, since we don't need to download it.
+		 */
+		if (!isIndependent && isExperiment) {
+			setStatus(Constants.BTN_STATUS_PARTICIPATE);
 		} else {
-			downloadButton.setText("Install");
-			downloadButton.setBackgroundColor(Color.MAGENTA);
-			downloadOrInstall = true;
+			setStatus(Constants.BTN_STATUS_DOWNLOAD);
 		}
 
 		downloadButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				if (!downloadOrInstall) {
+				/*
+				 * if status = Download
+				 */
+				if (buttonStatus == Constants.BTN_STATUS_DOWNLOAD) {
 					sendDownloadRequest(assetID, appName);
-				} else {
+					
+				} 
+				/*
+				 * if status = Install
+				 */
+				else if (buttonStatus == Constants.BTN_STATUS_INSTALL) {
 					installApp(appName);
+				} 
+				/*
+				 * if status = Participate
+				 */
+				else if (buttonStatus == Constants.BTN_STATUS_PARTICIPATE) {
+					participateInExperiment();
 				}
 
 			}
@@ -109,9 +128,25 @@ public class AppDetailActivity extends ActionBarActivity {
 
 	}
 
-	public void setInstall(boolean shouldInstall) {
-		downloadOrInstall = shouldInstall;
-		if (downloadOrInstall) {
+	/*
+	 * Set the status of the download button:
+	 * 1 = Download
+	 * 2 = Install
+	 * 3 = Participate
+	 * 4 = App Not Found
+	 */
+	public void setStatus(int status) {
+		buttonStatus = status;
+		if (status == Constants.BTN_STATUS_DOWNLOAD) {
+			downloadButton.post(new Runnable() {
+				public void run() {
+					downloadButton.setClickable(true);
+					downloadButton.setBackgroundColor(Color.MAGENTA);
+					downloadButton.setText("Download");
+				}
+			});
+		}
+		else if (status == Constants.BTN_STATUS_INSTALL) {
 			downloadButton.post(new Runnable() {
 				public void run() {
 					downloadButton.setClickable(true);
@@ -119,7 +154,15 @@ public class AppDetailActivity extends ActionBarActivity {
 					downloadButton.setText("Install");
 				}
 			});
-		} else {
+		} else if(status == Constants.BTN_STATUS_PARTICIPATE) {
+			downloadButton.post(new Runnable() {
+				public void run() {
+					downloadButton.setClickable(true);
+					downloadButton.setBackgroundColor(Color.GREEN);
+					downloadButton.setText("Participate");
+				}
+			});
+		} else if (status == Constants.BTN_STATUS_APPNOTFOUND) {
 			// Views can only be touched within their own threads
 			// We use posts to touch views from outside the threads they were
 			// created in.
@@ -144,7 +187,7 @@ public class AppDetailActivity extends ActionBarActivity {
 				}
 			});
 		}
-		Log.d("setInstall", "downloadOrInstall = " + downloadOrInstall);
+		Log.d("setInstall", "button status = " + buttonStatus);
 	}
 
 	public void setProgressStatus(int status) {
@@ -163,10 +206,8 @@ public class AppDetailActivity extends ActionBarActivity {
 		if (ChooseExperimentsActivity.getExperiment1()) {
 			whichExperiment = 1;
 		}
-		// conn.sendData(connectionSocket, "download " + assetID + " " + appName
-		// + " " + whichExperiment + " " + GetUsernameTask.getDownloadToken() +
-		// " " + GetUsernameTask.getAndroidId());
-		if (filePath == null) {
+
+		if (!isExperiment) {
 			SearchableActivity.web = new websockets();
 			SearchableActivity.web.connectWebSocket();
 			while (!SearchableActivity.web.isOpen()) {
@@ -209,7 +250,7 @@ public class AppDetailActivity extends ActionBarActivity {
 			// setContentView(detailLayout);
 			websockets.setContext(getApplicationContext());
 			websockets.seActivity(thisActivity);
-			if (appIcon != null) {
+			if (!isExperiment) {
 			websockets.setAppName(appName + ".apk");
 			Thread threadReceive = new Thread(new Runnable() {
 				public void run() {
@@ -251,47 +292,17 @@ public class AppDetailActivity extends ActionBarActivity {
 					// setInstall(true);
 				}
 			});
-			// Thread progressThread = new Thread(new Runnable() {
-			// public void run() {
-			// while (mProgressStatus < 100) {
-			// mProgressStatus = getProgressStatus();
-			// Log.d("awaitResponse", "mProgressStatus: " + mProgressStatus);
-			//
-			// // Update the progress bar
-			// mHandler.post(new Runnable() {
-			// public void run() {
-			// mProgress.setProgress(mProgressStatus);
-			// }
-			// });
-			// }
-			// }
-			// });
-			// progressThread.start();
+
 			receiveThread.start();
 
-			// while (!shouldInstall) {
-			// try {
-			// Thread.sleep(500);
-			// } catch (InterruptedException ex) {
-			// Thread.currentThread().interrupt();
-			// }
-			// }
-			// Log.d("AppDetailActivity", "shouldInstall is true");
-			// Button installButton = new Button(this);
-			// installButton.setText("Install");
-			// installButton.setOnClickListener(new View.OnClickListener() {
-			// public void onClick(View v) {
-			// installApp(appName);
-			// }
-			// });
-			// detailLayout.addView(installButton);
+
 
 		}
 
 	}
 
 	public void installApp(String appName) {
-		if (appIcon != null) {
+		if (!isExperiment) {
 		Log.d("installApp", "Trying to install app " + appName + ".apk");
 		Intent promptInstall = new Intent(Intent.ACTION_VIEW).setDataAndType(
 				Uri.fromFile(new File(this.getFilesDir() + "/" + appName
@@ -303,6 +314,35 @@ public class AppDetailActivity extends ActionBarActivity {
 					Uri.fromFile(new File(this.getFilesDir() + "/" + filePath)), "application/vnd.android.package-archive");
 			startActivity(promptInstall);
 		}
+	}
+	public void participateInExperiment() {
+		downloadButton.setClickable(false);
+		downloadButton.setBackgroundColor(Color.parseColor("#808080"));
+		
+		SearchableActivity.web = new websockets();
+		SearchableActivity.web.connectWebSocket();
+		while (!SearchableActivity.web.isOpen()) {
+			try {
+			Thread.sleep(50);
+			} catch(InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		/*
+		 * Tell the server that you want to participate in this experiment from now on
+		 * Then Record on phone that you are participating in this experiment 
+		 */
+		SearchableActivity.web
+				.sendMessage(("participate " + assetID + " " + appName).getBytes());
+		Log.d("Sent download request", "assetId: " + assetID);
+		Log.d("AppDetailActivity", "sent download request");
+		
+		SharedPreferences settings = getSharedPreferences(SettingsActivity.PREFS_NAME, 0);
+   		SharedPreferences.Editor editor = settings.edit();
+   		
+   		editor.putString("ExperimentParticipating", assetID);
+   		Toast.makeText(AppDetailActivity.this, "Changes Saved", 500).show();
+   		editor.commit();
 	}
 
 	@Override

@@ -194,9 +194,9 @@ public class Connections {
 						Log.d("receive", "Written file " + fileName);
 						// SearchableActivity.shouldInstall = true;
 
-						appActivity.setInstall(true);
+						appActivity.setStatus(Constants.BTN_STATUS_INSTALL);
 					} else {
-						appActivity.setInstall(false);
+						appActivity.setStatus(Constants.BTN_STATUS_APPNOTFOUND);
 					}
 
 				} catch (Exception e) {

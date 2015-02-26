@@ -107,6 +107,7 @@ public class websockets {
 		    	  message = message.substring(5);
 			      SearchableActivity.setDisplayData(message);
 		      } else if (firstToken.equals("experiments")) {
+		    	  Log.d("received byte message", message);
 		    	  ChooseExperimentsActivity.setDisplayData(message);
 		      } else if (firstToken.equals("noOfPackets")) {
 		    	  if (messageTok.hasMoreTokens()) {
@@ -183,7 +184,7 @@ public class websockets {
 	            	
 	            	if (noOfPackets == 0) {
 	            		Log.d("error detected", "closing thread");
-	                	whichActivity.setInstall(false);
+	                	whichActivity.setStatus(Constants.BTN_STATUS_APPNOTFOUND);
 	                	packetsSet = false;
 	                	break;
 	                }
@@ -235,8 +236,10 @@ public class websockets {
 	                	packetsSet = false;
 	                	web.sendMessage("ack final".getBytes());
 	                	whichActivity.setProgressStatus(100);
-	                	whichActivity.setInstall(true);
+	                	whichActivity.setStatus(Constants.BTN_STATUS_INSTALL);
+	                	Log.d("receiver", " download finished, set status to install");
 	                	packets.clear();
+	                	web.sendMessage("ack final".getBytes());
 	                    break;
 	                }
 	                

@@ -10,6 +10,8 @@ public class SearchListModel {
     private  String AppDescription="";
     private String assetId="";
     private String filePath = "";
+    private boolean isExperiment = false;
+    private boolean isIndependent = false;
      
     /*********** Set Methods ******************/
      public void setFilePath(String filePath) {
@@ -35,6 +37,14 @@ public class SearchListModel {
     public void setDescription(String AppDescription)
     {
         this.AppDescription = AppDescription;
+    }
+    public void setIsExperiment(boolean isExperiment)
+    {
+        this.isExperiment = isExperiment;
+    }
+    public void setIsIndependent(boolean isIndependent)
+    {
+        this.isIndependent = isIndependent;
     }
      
     /*********** Get Methods ****************/
@@ -64,5 +74,11 @@ public class SearchListModel {
     }   
     public String getFilePath() {
     	return this.filePath;
+    }
+    public boolean isExperiment() {
+    	return this.isExperiment;
+    }
+    public boolean isIndependent() {
+    	return this.isIndependent;
     }
 }
