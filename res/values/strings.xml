@@ -28,8 +28,14 @@
     <string name="testInstall">Test Installation</string>
     <string name="title_activity_searchable">SearchableActivity</string>
     <string name="title_activity_app_detail">AppDetailActivity</string>
-    <string name="experiments">Choose Experiments</string>
+    <string name="title_see_questionnaires">SeeQuestionnaires</string>
+    <string name="experiments">Browse Experiments</string>
     <string name="title_activity_choose_experiments">ChooseExperimentsActivity</string>
     <string name="title_activity_settings">SettingsActivity</string>
+    <string name="title_activity_check_downloads">CheckDownloadsActivity</string>
+    <string name="title_activity_send_check_downloads">SendCheckDownloads</string>
+    <string name="title_activity_splash">Splash</string>
+    <string name="title_activity_see_installed_apps">SeeInstalledApps</string>
+    <string name="title_activity_notification">NotificationActivity</string>
 
 </resources>

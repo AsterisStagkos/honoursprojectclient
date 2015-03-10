@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
+    android:background="@drawable/science_background_three"
     android:orientation="vertical" >
 
    <!-- <CheckBox android:id="@+id/experiment_one"

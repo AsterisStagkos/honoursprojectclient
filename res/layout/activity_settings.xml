@@ -6,19 +6,24 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.androidhproject.SettingsActivity" >
+    tools:context="science.play.code.SettingsActivity" >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
-    <EditText
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Settings are for noobs"
+        />
+ <!--   <EditText
     android:id="@+id/ip_address"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:hint="@string/ip_hint"
     android:inputType="text" />
-    <EditText
+   <EditText
     android:id="@+id/port"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -40,6 +45,7 @@
     android:id="@+id/submit_button"
     android:layout_height="wrap_content"
     android:layout_width="match_parent" />
+     --> 
     
     </LinearLayout>
 

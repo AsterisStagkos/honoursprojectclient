@@ -6,27 +6,96 @@
     android:layout_height="match_parent"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
-    android:orientation="vertical" >
+    android:orientation="vertical" 
+    android:background="@drawable/science_background_two" 
+    >
 
 	<LinearLayout
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
+	    android:paddingTop="30dp"
 	    android:orientation="vertical"
 	    android:layout_gravity="center_vertical|center_horizontal"
 	    >
 
-    <Button
+   <!--   <Button
         android:id="@+id/signInButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|center_horizontal"
-        android:text="@string/sign_in_button" />
+        android:text="@string/sign_in_button" /> -->
+        
+    <Button
+        android:id="@+id/searchAppStoreButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:background="@drawable/mybutton"
+        android:padding="10dp"
+    	android:textColor="#ffffff"
+        android:text="Search App Store" />
     <Button
         android:id="@+id/experimentsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|center_horizontal"
+        android:background="@drawable/mybutton"
+        android:layout_marginTop="20dp"
+        android:padding="10dp"
+    	android:textColor="#ffffff"
         android:text="@string/experiments" />
+    
+     <Button
+        android:id="@+id/currentExperimentButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_marginTop="20dp"
+        android:padding="10dp"
+        android:textColor="#ffffff"
+        android:background="@drawable/mybutton"
+        android:text="Current Participating Experiment" />
+     
+     <Button
+        android:id="@+id/installedAppsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_marginTop="20dp"
+        android:padding="10dp"
+        android:textColor="#ffffff"
+        android:background="@drawable/mybutton"
+        android:text="Check For Updates" />
+     
+      <Button
+        android:id="@+id/checkQuestionnairesButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_marginTop="20dp"
+        android:padding="10dp"
+        android:textColor="#ffffff"
+        android:background="@drawable/mybutton"
+        android:text="Questionnaires" />
+    <!--    <Button
+        android:id="@+id/checkForDownloadButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:text="Check Downloads" /> -->
+     
+   <!--   <EditText
+        android:id="@+id/testSQL"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+    ></EditText>
+    <Button
+        android:id="@+id/testSQLbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:text="send SQL" /> -->
+    
     </LinearLayout>
     
 </LinearLayout>
