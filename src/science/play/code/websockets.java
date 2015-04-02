@@ -25,7 +25,7 @@ public class websockets {
 	private WebSocketClient mWebSocketClient;
 	public int fileSizeStatic;
 	public byte[] fileBytesStatic;
-	private CheckDownloadsActivity mainActivity;
+	private ServerPinger mainActivity;
 	static byte[] nextPacket;
 	private int noOfPackets = 100;
 	private static boolean packetsSet = false;
@@ -57,7 +57,7 @@ public class websockets {
 	public void seActivity(AppDetailActivity activity) {
 		whichActivity = activity;
 	}
-	public void setMainActivity(CheckDownloadsActivity activity) {
+	public void setMainActivity(ServerPinger activity) {
 		mainActivity = activity;
 	}
 	public void setAppName(String appname) {

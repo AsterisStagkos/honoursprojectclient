@@ -81,10 +81,12 @@ public class MarketApi  {
 			session.setAndroidId(androidID);
 			session.setAuthSubToken(token);		
 			System.out.println("Login done");
+			Log.d("authenticate", "successful");
 			return session;
 		} catch (Exception e) {
 			MarketSession errorSession = new MarketSession(secure);		
 			e.printStackTrace();
+			Log.d("authenticate", "failed");
 			return errorSession;
 		}
 		

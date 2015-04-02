@@ -33,7 +33,6 @@ public class SeeInstalledApps extends ActionBarActivity {
 	    Intent intent = AccountPicker.newChooseAccountIntent(null, null,
 	            accountTypes, true, null, null, null, null);
 	    startActivityForResult(intent, MainActivity.REQUEST_CODE_PICK_ACCOUNT); 
-		
 		} 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

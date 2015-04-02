@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings.Secure;
 import android.util.Log;
 
 import com.google.android.gms.auth.GoogleAuthException;
@@ -26,6 +27,7 @@ public class GetUsernameTask extends AsyncTask{
     static String searchToken;
     static String downloadToken;
     static String androidId;
+    static String androidId2;
     private static final Uri URI = Uri.parse("content://com.google.android.gsf.gservices");
     private static final String ID_KEY = "android_id";
 
@@ -82,6 +84,9 @@ public class GetUsernameTask extends AsyncTask{
 	public static String getAndroidId() {
 		return androidId;
 	}
+	public static String getAndroidId2() {
+		return androidId2;
+	}
     /**
      * Gets an authentication token from Google and handles any
      * GoogleAuthException that may occur.
@@ -95,6 +100,10 @@ public class GetUsernameTask extends AsyncTask{
             Log.d("Google", "Google Token = " + googleToken);
             downloadToken = googleToken;
             androidId = id;
+            String android_id_2 = Secure.getString(mActivity.getContentResolver(),
+                    Secure.ANDROID_ID); 
+            androidId2 = android_id_2;
+            Log.d("android id=", androidId);
             return googleToken;
         } catch (UserRecoverableAuthException userRecoverableException) {
             // GooglePlayServices.apk is either old, disabled, or not present

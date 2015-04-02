@@ -399,7 +399,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
 
 		 Log.d("MainActivity", "SetAlarm called");
 	    	long calendarTime = targetCal.getTimeInMillis();
-	        Intent intent = new Intent(getBaseContext(), CheckDownloadsActivity.class);
+	        Intent intent = new Intent(getBaseContext(), ServerPinger.class);
 	        PendingIntent pendingIntent = PendingIntent.getBroadcast(
 	                getBaseContext(), 1, intent, 0);
 	        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
